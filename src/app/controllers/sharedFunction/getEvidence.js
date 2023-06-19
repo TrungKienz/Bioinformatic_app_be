@@ -84,6 +84,12 @@ const _get_evi_mixed = (jsonObject, scope) => {
 const _get_evi = (condition, gene, protein) => {
     const data = require(`../../../../data/dataDrug/${condition}_world_BE.json`);
     let drug_result = [];
+    protein = protein?.split('p.')[1];
+    if (protein != undefined){
+        for (var it in AA_list_r){
+            protein = protein.replace(it,AA_list_r[it])
+        }
+    }
     for (let i = 0; i < data.length; i++) {
         if (
             data[i].aa_mutation.includes(protein) &&
