@@ -1,4 +1,5 @@
 const articleModel = require('../models/ArticleModel');
+const fs = require('fs');
 
 let articleModelData = '';
 class drugInformationController {
@@ -109,6 +110,39 @@ class drugInformationController {
             console.error(error);
             return res.status(500).json({ error: 'Error!!!' });
         }
+    };
+
+    getArticle = (req, res) => {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 5;
+        const articleType = req.query.articleType || '';
+        const startIndex = (page - 1) * limit;
+        const endIndex = page * limit;
+
+        fs.readFile(
+            `data/dataArticle/${articleType}_.json`,
+            'utf8',
+            (err, data) => {
+                if (err) {
+                    console.error(err);
+                    res.status(500).send('Internal Server Error');
+                    return;
+                }
+
+                const jsonData = JSON.parse(data);
+                const drugData = jsonData.slice(startIndex, endIndex);
+
+                const response = {
+                    page,
+                    limit,
+                    totalItems: jsonData.length,
+                    totalPages: Math.ceil(jsonData.length / limit),
+                    drugData,
+                };
+
+                res.json(response);
+            },
+        );
     };
 }
 
