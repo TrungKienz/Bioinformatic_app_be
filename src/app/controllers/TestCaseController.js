@@ -10,7 +10,7 @@ app.use(express.urlencoded({ extended: true }));
 const multer = require('multer');
 const path = require('path');
 
-const dataDirectory = path.join(__dirname, '../../../data/dataInput/');
+const dataDirectory = path.join(__dirname, '/data/dataInput/');
 
 class testCaseController {
     findAll(req, res) {

@@ -1,6 +1,7 @@
 const { _get_evi_mixed, _get_evi } = require('./sharedFunction/getEvidence');
 const { json } = require('express');
 const drugInformationModel = require('../models/DrugInformationModel');
+const fs = require('fs');
 
 class drugInformationController {
     //GET
@@ -106,6 +107,38 @@ class drugInformationController {
             console.error(error);
             return res.status(500).json({ error: 'Error!!!' });
         }
+    };
+
+    getDrug = (req, res) => {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 5;
+        const startIndex = (page - 1) * limit;
+        const endIndex = page * limit;
+
+        fs.readFile(
+            'data/dataDrug/breast_asia_BE.json',
+            'utf8',
+            (err, data) => {
+                if (err) {
+                    console.error(err);
+                    res.status(500).send('Internal Server Error');
+                    return;
+                }
+
+                const jsonData = JSON.parse(data);
+                const drugData = jsonData.slice(startIndex, endIndex);
+
+                const response = {
+                    page,
+                    limit,
+                    totalItems: jsonData.length,
+                    totalPages: Math.ceil(jsonData.length / limit),
+                    drugData,
+                };
+
+                res.json(response);
+            },
+        );
     };
 
     getEvidenceAsiaMixed(req, res) {
