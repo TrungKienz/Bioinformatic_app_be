@@ -10,7 +10,7 @@ const path = require('path');
 class uploadFile {
     uploadFile(req, res) {
         const fileName = req.body.patientID;
-        const dataDirectory = path.join(__dirname, '../../../data/dataInput');
+        const dataDirectory = path.join(__dirname, '/data/dataInput');
         const storage = multer.diskStorage({
             destination: dataDirectory,
             filename: (req, file, cb) => {

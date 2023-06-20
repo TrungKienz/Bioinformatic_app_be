@@ -58,7 +58,7 @@ const AA_list_r = {
 const _get_evi_mixed = (jsonObject, scope) => {
     let drug_result = [];
     for (let it of cond) {
-        const data = require(`../../../../data/dataDrug/${it}_${scope}_BE.json`);
+        const data = require(`/data/dataDrug/${it}_${scope}_BE.json`);
         const mutInfo = jsonObject.mutations;
 
         for (const item in mutInfo) {
@@ -82,7 +82,7 @@ const _get_evi_mixed = (jsonObject, scope) => {
 };
 
 const _get_evi = (condition, gene, protein) => {
-    const data = require(`../../../../data/dataDrug/${condition}_world_BE.json`);
+    const data = require(`data/dataDrug/${condition}_world_BE.json`);
     let drug_result = [];
     protein = protein?.split('p.')[1];
     if (protein != undefined){

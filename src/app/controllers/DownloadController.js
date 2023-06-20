@@ -1,5 +1,5 @@
 const path = require('path');
-const dataDirectory = path.join(__dirname, '../../../dataInput/');
+const dataDirectory = path.join(__dirname, 'data/dataInput/');
 
 class downloadController {
     //GET

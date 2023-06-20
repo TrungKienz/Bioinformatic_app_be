@@ -15,5 +15,6 @@ router.post(
     drugInformationController.getEvidenceWorldMixed,
 );
 router.post('/prediction/evidence', drugInformationController.getEvidence);
+router.get('/get-drug', drugInformationController.getDrug);
 
 module.exports = router;

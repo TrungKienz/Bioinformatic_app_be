@@ -1,7 +1,9 @@
+require('dotenv').config();
+require('./alias');
+
 const express = require('express');
 const morgan = require('morgan');
 const compression= require('compression');
-require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 3000;
 const clientURL = process.env.CLIENT_URL;
