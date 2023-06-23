@@ -112,11 +112,12 @@ class drugInformationController {
     getDrug = (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 5;
+        const typeCancer = req.query.typeCancer || '';
         const startIndex = (page - 1) * limit;
         const endIndex = page * limit;
 
         fs.readFile(
-            'data/dataDrug/breast_asia_BE.json',
+            `data/dataDrug/${typeCancer}_asia_BE.json`,
             'utf8',
             (err, data) => {
                 if (err) {
@@ -126,14 +127,52 @@ class drugInformationController {
                 }
 
                 const jsonData = JSON.parse(data);
-                const drugData = jsonData.slice(startIndex, endIndex);
+                const dataDrug = jsonData.slice(startIndex, endIndex);
 
                 const response = {
                     page,
                     limit,
                     totalItems: jsonData.length,
                     totalPages: Math.ceil(jsonData.length / limit),
-                    drugData,
+                    dataDrug,
+                };
+
+                res.json(response);
+            },
+        );
+    };
+
+    searchDrug = (req, res) => {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 5;
+        const typeCancer = req.query.typeCancer || '';
+        const region = req.body.region;
+        const geneName = req.body.geneName;
+        const startIndex = (page - 1) * limit;
+        const endIndex = page * limit;
+
+        console.log(region + geneName);
+
+        fs.readFile(
+            `data/dataDrug/${typeCancer}_${region}_BE.json`,
+            'utf8',
+            (err, data) => {
+                if (err) {
+                    console.error(err);
+                    return res.status(500).send('Internal Server Error');
+                }
+
+                const jsonData = JSON.parse(data);
+                const dataDrug = jsonData
+                    .filter((item) => item['Gene name'] === geneName)
+                    .slice(startIndex, endIndex);
+
+                const response = {
+                    page,
+                    limit,
+                    totalItems: jsonData.length,
+                    totalPages: Math.ceil(jsonData.length / limit),
+                    dataDrug,
                 };
 
                 res.json(response);
