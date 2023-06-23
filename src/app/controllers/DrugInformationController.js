@@ -4,7 +4,7 @@ const drugInformationModel = require('../models/DrugInformationModel');
 const fs = require('fs');
 
 class drugInformationController {
-    //GET
+    // ------> Begin <------- ONKOKB Drug fucntion
     findAll(req, res) {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
@@ -109,6 +109,9 @@ class drugInformationController {
         }
     };
 
+    // ------> End <------- ONKOKB Drug function
+
+    // ------> Begin <------- New function for new drug data
     getDrug = (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 5;
@@ -143,15 +146,13 @@ class drugInformationController {
     };
 
     searchDrug = (req, res) => {
-        const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 5;
         const typeCancer = req.query.typeCancer || '';
-        const region = req.body.region;
+        const region = req.body.region[0];
         const geneName = req.body.geneName;
-        const startIndex = (page - 1) * limit;
-        const endIndex = page * limit;
-
-        console.log(region + geneName);
+        const startIndex = 0;
+        const endIndex = Infinity;
+        console.log('region: ' + region);
 
         fs.readFile(
             `data/dataDrug/${typeCancer}_${region}_BE.json`,
@@ -163,15 +164,20 @@ class drugInformationController {
                 }
 
                 const jsonData = JSON.parse(data);
-                const dataDrug = jsonData
-                    .filter((item) => item['Gene name'] === geneName)
-                    .slice(startIndex, endIndex);
+
+                let filteredData = jsonData;
+                if (geneName) {
+                    filteredData = jsonData.filter(
+                        (item) => item['Gene name'] === geneName,
+                    );
+                }
+
+                const dataDrug = filteredData.slice(startIndex, endIndex);
 
                 const response = {
-                    page,
                     limit,
-                    totalItems: jsonData.length,
-                    totalPages: Math.ceil(jsonData.length / limit),
+                    totalItems: filteredData.length,
+                    totalPages: Math.ceil(filteredData.length / limit),
                     dataDrug,
                 };
 
