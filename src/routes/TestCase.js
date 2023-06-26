@@ -12,6 +12,7 @@ router.get('/file-name', testCaseController.getFileName);
 router.delete('/delete/:id', testCaseController.delete);
 router.get('/find/:id', testCaseController.findByID);
 router.post('/add', testCaseController.addTest);
+router.put('/update-test', testCaseController.updateTest);
 router.post('/add-result-test', testCaseController.addTestResult);
 
 module.exports = router;

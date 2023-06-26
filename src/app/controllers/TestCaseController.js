@@ -125,6 +125,43 @@ class testCaseController {
             });
     }
 
+    updateTest(req, res) {
+        console.log(req.body);
+        const testCaseBody = req.body;
+
+        const updatedTestData = {
+            patientID: String(testCaseBody?.patientID),
+            patientName: String(testCaseBody?.patientName),
+            testName: String(testCaseBody?.testName),
+            primaryTissue: String(testCaseBody?.primaryTissue),
+            avaliable: Boolean(testCaseBody?.avaliable),
+        };
+
+        console.log(req.params.id);
+        testCaseModel
+            .findOneAndUpdate(
+                { patientID: testCaseBody.patientID },
+                updatedTestData,
+                { new: true },
+            )
+            .then((test) => {
+                if (test) {
+                    console.log('Updated test case in the database:', test);
+                    res.status(200).json({
+                        message: 'Test case updated successfully',
+                        test,
+                    });
+                } else {
+                    console.log('Test case not found');
+                    res.status(404).json({ error: 'Test case not found' });
+                }
+            })
+            .catch((err) => {
+                console.error('Error updating test case in the database:', err);
+                res.status(500).json({ error: 'Failed to update test case' });
+            });
+    }
+
     addTestResult(req, res) {
         console.log(req.body);
         const testResultArray = req.body;
