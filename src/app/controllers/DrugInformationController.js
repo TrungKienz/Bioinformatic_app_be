@@ -1,7 +1,7 @@
 const { _get_evi_mixed, _get_evi } = require('./sharedFunction/getEvidence');
 const { json } = require('express');
-const drugInformationModel = require('../models/DrugInformationModel');
 const fs = require('fs');
+const drugInformationModel = require('../models/DrugInformationModel');
 
 class drugInformationController {
     // ------> Begin <------- ONKOKB Drug fucntion

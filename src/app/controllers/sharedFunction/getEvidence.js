@@ -58,7 +58,7 @@ const AA_list_r = {
 const _get_evi_mixed = (jsonObject, scope) => {
     let drug_result = [];
     for (let it of cond) {
-        const data = require(`/data/dataDrug/${it}_${scope}_BE.json`);
+        const data = require(`@data/dataDrug/${it}_${scope}_BE.json`);
         const mutInfo = jsonObject.mutations;
 
         for (const item in mutInfo) {
@@ -70,7 +70,7 @@ const _get_evi_mixed = (jsonObject, scope) => {
             }
             for (let j = 0; j < data.length; j++) {
                 if (
-                    data[j].aa_mutation.includes(pr) &&
+                    data[j].aa_mutation?.includes(pr) &&
                     data[j].gene_name == mutInfo[item]['Gene']
                 ) {
                     drug_result.push(data[j]);
@@ -82,17 +82,19 @@ const _get_evi_mixed = (jsonObject, scope) => {
 };
 
 const _get_evi = (condition, gene, protein) => {
-    const data = require(`data/dataDrug/${condition}_world_BE.json`);
+    const data = require(`@data/dataDrug/${condition}_world_BE.json`);
     let drug_result = [];
     protein = protein?.split('p.')[1];
-    if (protein != undefined){
-        for (var it in AA_list_r){
-            protein = protein.replace(it,AA_list_r[it])
+    console.log('protein: ' + protein);
+    if (protein != undefined) {
+        for (var it in AA_list_r) {
+            protein = protein.replace(it, AA_list_r[it]);
         }
     }
+    console.log('protein_after: ' + protein);
     for (let i = 0; i < data.length; i++) {
         if (
-            data[i].aa_mutation.includes(protein) &&
+            data[i].aa_mutation?.includes(protein) &&
             data[i].gene_name == gene
         ) {
             drug_result.push(data[i]);
