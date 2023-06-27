@@ -3,6 +3,8 @@ const dataTestModel = require('../models/DataTestModel');
 const express = require('express');
 const fs = require('fs');
 const app = express();
+const jwt = require('jsonwebtoken');
+const secretKey = 'secret';
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -126,40 +128,57 @@ class testCaseController {
     }
 
     updateTest(req, res) {
-        console.log(req.body);
         const testCaseBody = req.body;
-
         const updatedTestData = {
             patientID: String(testCaseBody?.patientID),
             patientName: String(testCaseBody?.patientName),
             testName: String(testCaseBody?.testName),
             primaryTissue: String(testCaseBody?.primaryTissue),
-            avaliable: Boolean(testCaseBody?.avaliable),
+            available: Boolean(testCaseBody?.available),
         };
 
-        console.log(req.params.id);
-        testCaseModel
-            .findOneAndUpdate(
-                { patientID: testCaseBody.patientID },
-                updatedTestData,
-                { new: true },
-            )
-            .then((test) => {
-                if (test) {
-                    console.log('Updated test case in the database:', test);
-                    res.status(200).json({
-                        message: 'Test case updated successfully',
-                        test,
+        // Xác thực JWT
+        const authHeader = req.headers.authorization;
+        const token = authHeader && authHeader.split(' ')[1];
+
+        if (!token) {
+            console.log('false');
+            return res.sendStatus(401);
+        }
+
+        jwt.verify(token, 'secret', (err, user) => {
+            if (err) {
+                return res.sendStatus(403);
+            }
+
+            testCaseModel
+                .findOneAndUpdate(
+                    { patientID: testCaseBody.patientID },
+                    updatedTestData,
+                    { new: true },
+                )
+                .then((test) => {
+                    if (test) {
+                        console.log('Updated test case in the database:', test);
+                        res.status(200).json({
+                            message: 'Test case updated successfully',
+                            test,
+                        });
+                    } else {
+                        console.log('Test case not found');
+                        res.status(404).json({ error: 'Test case not found' });
+                    }
+                })
+                .catch((err) => {
+                    console.error(
+                        'Error updating test case in the database:',
+                        err,
+                    );
+                    res.status(500).json({
+                        error: 'Failed to update test case',
                     });
-                } else {
-                    console.log('Test case not found');
-                    res.status(404).json({ error: 'Test case not found' });
-                }
-            })
-            .catch((err) => {
-                console.error('Error updating test case in the database:', err);
-                res.status(500).json({ error: 'Failed to update test case' });
-            });
+                });
+        });
     }
 
     addTestResult(req, res) {
