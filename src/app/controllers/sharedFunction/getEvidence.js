@@ -6,6 +6,7 @@ const cond = [
     'lung',
     'large_intestine',
     'thyroid',
+    'other',
 ];
 
 const AA_list = {
