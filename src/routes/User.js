@@ -8,5 +8,5 @@ router.post('/user-infor', userController.findUser);
 router.post('/current-user', userController.findUserByToken);
 router.post('/login', userController.login);
 router.post('/register', userController.register);
-
+router.get('/get-all-user', userController.getAllUser);
 module.exports = router;

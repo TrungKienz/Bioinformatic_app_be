@@ -113,6 +113,15 @@ class userController {
         }
     };
 
+    getAllUser(req, res) {
+        accountModel.find({}, function (err, accountModel) {
+            if (!err) {
+                res.json(accountModel);
+            } else {
+                res.status(500).json({ error: 'Error!!!' });
+            }
+        });
+    }
     findUserByToken = async (req, res) => {
         try {
             const token = req.body;
