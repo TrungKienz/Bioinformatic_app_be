@@ -9,4 +9,7 @@ router.post('/current-user', userController.findUserByToken);
 router.post('/login', userController.login);
 router.post('/register', userController.register);
 router.get('/get-all-user', userController.getAllUser);
+router.put('/update-user', userController.updateUser);
+router.delete('/delete-user/:id', userController.delete);
+
 module.exports = router;

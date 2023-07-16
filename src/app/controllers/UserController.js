@@ -149,6 +149,72 @@ class userController {
             res.status(500).json({ message: 'An error occurred' });
         }
     };
+
+    updateUser = async (req, res) => {
+        const userBody = req.body;
+        console.log(userBody.password);
+        const user = await accountModel.findOne({
+            email: String(userBody.email),
+        });
+        let newPassword;
+        if (userBody.password != undefined || userBody.password == '') {
+            newPassword = await bcrypt.hash(userBody.password, 10);
+        } else {
+            newPassword = user.password;
+        }
+
+        const updatedUserInfor = {
+            email: String(userBody?.email),
+            password: newPassword,
+            name: String(userBody?.name),
+            access: String(userBody?.access),
+        };
+
+        // Xác thực JWT
+        const authHeader = req.headers.authorization;
+        const token = authHeader && authHeader.split(' ')[1];
+
+        if (!token) {
+            console.log('false');
+            return res.sendStatus(401);
+        }
+
+        jwt.verify(token, 'secret', (err, user) => {
+            if (err) {
+                return res.sendStatus(403);
+            }
+
+            accountModel
+                .findOneAndUpdate({ email: userBody.email }, updatedUserInfor, {
+                    new: true,
+                })
+                .then((user) => {
+                    if (user) {
+                        console.log('Updated User in the database:', user);
+                        res.status(200).json({
+                            message: 'User updated successfully',
+                            user,
+                        });
+                    } else {
+                        console.log('User not found');
+                        res.status(404).json({ error: 'User not found' });
+                    }
+                })
+                .catch((err) => {
+                    console.error('Error updating User in the database:', err);
+                    res.status(500).json({
+                        error: 'Failed to update User',
+                    });
+                });
+        });
+    };
+
+    delete(req, res, next) {
+        accountModel
+            .deleteOne({ _id: req.params.id })
+            .then(() => res.redirect('back'))
+            .catch(next);
+    }
 }
 
 module.exports = new userController();
