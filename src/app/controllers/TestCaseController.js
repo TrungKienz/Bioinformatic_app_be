@@ -1,10 +1,10 @@
 const testCaseModel = require('../models/TestCaseModel');
 const dataTestModel = require('../models/DataTestModel');
+const authenticateToken = require('./sharedFunction/authentication');
 const express = require('express');
 const fs = require('fs');
 const app = express();
 const jwt = require('jsonwebtoken');
-const secretKey = 'secret';
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -14,8 +14,10 @@ const path = require('path');
 
 const dataDirectory = path.join(__dirname, '/data/dataInput/');
 
+secretKey = process.env.SECRET_KEY;
 class testCaseController {
     findAll(req, res) {
+        console.log(authenticateToken(req, res));
         testCaseModel.find({}, function (err, testCaseModel) {
             if (!err) {
                 res.json(testCaseModel);
@@ -40,7 +42,6 @@ class testCaseController {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
-
         testCaseModel.countDocuments({}, function (err, count) {
             if (err) {
                 return res.status(500).json({ error: 'Error!!!' });
@@ -146,7 +147,7 @@ class testCaseController {
             return res.sendStatus(401);
         }
 
-        jwt.verify(token, 'secret', (err, user) => {
+        jwt.verify(token, secretKey, (err, user) => {
             if (err) {
                 return res.sendStatus(403);
             }

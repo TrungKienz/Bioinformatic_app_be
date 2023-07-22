@@ -1,19 +1,32 @@
-const authenticateToken = (req, res, next) => {
-    const authHeader = req.headers.authorization;
-    const token = authHeader && authHeader.split(' ')[1];
+const jwt = require('jsonwebtoken');
+const accountModel = require('../../models/UserModel');
+const secretKey = process.env.SECRET_KEY;
 
-    if (token == null) {
-        return res.sendStatus(401);
-    }
+const authenticateToken = async (authHeader) => {
+    try {
+        const token = authHeader && authHeader.split(' ')[1];
 
-    jwt.verify(token, secretKey, (err, user) => {
-        if (err) {
-            return res.sendStatus(403);
+        if (!token) {
+            throw new Error('Token not found');
         }
 
-        req.user = user;
-        next();
-    });
+        const decodedToken = jwt.verify(token, secretKey);
+        const userData = await accountModel.findOne({
+            _id: String(decodedToken.id),
+        });
+
+        if (!userData) {
+            throw new Error('User not found');
+        }
+
+        if (userData.access === 'admin' || userData.access === 'doctor') {
+            return 1;
+        } else {
+            return 0;
+        }
+    } catch (error) {
+        throw new Error('Authentication failed');
+    }
 };
 
 module.exports = authenticateToken;

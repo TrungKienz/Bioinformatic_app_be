@@ -1,6 +1,7 @@
 const accountModel = require('../models/UserModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+secretKey = process.env.SECRET_KEY;
 
 class userController {
     login = async (req, res) => {
@@ -25,7 +26,7 @@ class userController {
                 return res.status(401).json({ message: 'Invalid password' });
             }
 
-            const token = jwt.sign({ id: user._id }, 'secret', {
+            const token = jwt.sign({ id: user._id }, secretKey, {
                 expiresIn: '1h',
             });
             const signStatus = {
@@ -122,12 +123,11 @@ class userController {
             }
         });
     }
+
     findUserByToken = async (req, res) => {
         try {
             const token = req.body;
-            console.log(token);
-            const decodedToken = jwt.verify(token.token, 'secret');
-            console.log(decodedToken);
+            const decodedToken = jwt.verify(token.token, secretKey);
             const user = await accountModel.findOne({
                 _id: String(decodedToken.id),
             });
